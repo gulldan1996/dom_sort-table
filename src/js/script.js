@@ -1,3 +1,4 @@
+// it's solution from - https://next.plnkr.co/edit/xoqlOD7IfVOeriG0L4po?p=preview&preview
 var grid = document.getElementById('grid');
 
 grid.onclick = function(e) {
