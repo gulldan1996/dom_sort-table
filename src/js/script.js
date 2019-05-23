@@ -1,46 +1,38 @@
-var grid = document.getElementById('grid');
+'use strict'
 
-grid.onclick = function(e) {
-  if (e.target.tagName != 'TH') return;
+function madeSortTable(table) {
+  const headerTh = table.querySelector('[data-header]');
+  const tbody = table.querySelector('[data-th-body]');
 
-  // Если TH -- сортируем
-  sortGrid(e.target.cellIndex, e.target.getAttribute('data-type'));
+  headerTh.addEventListener('click', (e) => {
+    const th = e.target.closest('th');
+    if (!th) return;
+
+    const column = th.cellIndex;
+    const rows = [...tbody.children];
+    const sortItem = th.dataset.type;
+
+    rows.sort((rowA, rowB) => {
+      const valueA = rowA.cells[column].textContent;
+      const valueB = rowB.cells[column].textContent;
+
+      switch (sortItem) {
+        case 'number':
+          return (+valueA) - (+valueB);
+
+        case 'string':
+          return (valueA > valueB) ? 1 : -1;
+
+        default:
+          return 0;
+      }
+    });
+    for (const row of rows) {
+      tbody.appendChild(row);
+    }
+  });
 };
 
-function sortGrid(colNum, type) {
-  var tbody = grid.getElementsByTagName('tbody')[0];
-
-  // Составить массив из TR
-  var rowsArray = [].slice.call(tbody.rows);
-
-  // определить функцию сравнения, в зависимости от типа
-  var compare;
-
-  switch (type) {
-    case 'number':
-      compare = function(rowA, rowB) {
-        return rowA.cells[colNum].innerHTML - rowB.cells[colNum].innerHTML;
-      };
-      break;
-    case 'string':
-      compare = function(rowA, rowB) {
-        return rowA.cells[colNum].innerHTML > rowB.cells[colNum].innerHTML;
-      };
-      break;
-  }
-
-  // сортировать
-  rowsArray.sort(compare);
-
-  // Убрать tbody из большого DOM документа для лучшей производительности
-  grid.removeChild(tbody);
-
-  // добавить результат в нужном порядке в TBODY
-  // они автоматически будут убраны со старых мест и вставлены в правильном порядке
-  for (var i = 0; i < rowsArray.length; i++) {
-    tbody.appendChild(rowsArray[i]);
-  }
-
-  grid.appendChild(tbody);
-
-}
+madeSortTable(
+  document.querySelector('[data-my-table]')
+);
